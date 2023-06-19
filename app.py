@@ -3,6 +3,7 @@ from exts import db
 import config
 from flask_migrate import Migrate
 from models import auth
+from apps.front import front_bp
 
 app = Flask(__name__)
 app.config.from_object(config)
@@ -10,11 +11,7 @@ app.config.from_object(config)
 db.init_app(app)
 migrate = Migrate(app, db)
 
-
-@app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World!'
-
+app.register_blueprint(front_bp)
 
 if __name__ == '__main__':
     app.run()
