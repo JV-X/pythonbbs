@@ -8,3 +8,12 @@ DB_URI = 'mysql+pymysql://%s:%s@%s:%s/%s?charset=utf8mb4' % (DB_USERNAME, DB_PAS
 
 SQLALCHEMY_DATABASE_URI = DB_URI
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+
+MAIL_SERVER = "smtp.qq.com"
+MAIL_PORT = '587'
+MAIL_USE_TLS = True
+# MAIL_USE_SSL
+MAIL_USERNAME = "xjv1195275315@qq.com"
+MAIL_PASSWORD = "igtqeblbgaqyhgag"
+MAIL_DEFAULT_SENDER = "xjv1195275315@qq.com"
