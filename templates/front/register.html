@@ -6,6 +6,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='front/css/signbase.css') }}">
+    <script src="{{ url_for('static', filename='front/js/register.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -23,7 +24,7 @@
                 <div class="input-group">
                     <input type="email" class="form-control" name="email" placeholder="邮箱">
                     <span class="input-group-btn">
-                            <button id="sms-captcha-btn" class="btn btn-default">发送验证码</button>
+                            <button id="email-captcha-btn" class="btn btn-default">发送验证码</button>
                         </span>
                 </div>
             </div>

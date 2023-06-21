@@ -1,3 +1,5 @@
+SECRET_KEY = 'asqwfrjvk689wk'
+
 DB_USERNAME = 'root'
 DB_PASSWORD = 'xjv123..'
 DB_HOST = '127.0.0.1'
