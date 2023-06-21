@@ -15,7 +15,7 @@ var callback = function (event){
             if(result['code'] == 200) {
                 $this.off("click")
                 $this.attr("disabled",'disabled');
-                var countDown = 6;
+                var countDown = 60;
                 var interval = setInterval(function(){
                     if(countDown > 0){
                         $this.text(countDown)
@@ -36,6 +36,7 @@ var callback = function (event){
 RegisterHandler.prototype.listenSendCaptchaEvent = function () {
     $('#email-captcha-btn').on('click',callback);
 }
+
 RegisterHandler.prototype.listenGraphCaptchaEvent = function() {
     $('#captcha-img').on("click", function(){
         var $this = $(this);
@@ -45,9 +46,36 @@ RegisterHandler.prototype.listenGraphCaptchaEvent = function() {
     })
 }
 
+RegisterHandler.prototype.listenSubmitEvent = function() {
+    $('#submit-btn').on('click', function(event){
+        event.preventDefault();
+        var email = $('input[name="email"]').val()
+        var username = $('input[name="username"]').val()
+        var password = $('input[name="password"]').val()
+        var password_repeat = $('input[name="password_repeat"]').val()
+        var graph_captcha = $('input[name="graph_captcha"]').val()
+        var email_captcha = $('input[name="email_captcha"]').val()
+        zlajax.post({
+            url: '/register',
+            data: {
+                'email':email,
+                'username':username,
+                'password':password,
+                'repeat_password':password_repeat,
+                'graph_captcha':graph_captcha,
+                'email_captcha':email_captcha,
+            },
+            success : function(result){
+                console.log(result)
+            },
+        })
+    })
+}
+
 RegisterHandler.prototype.run = function () {
     this.listenSendCaptchaEvent();
     this.listenGraphCaptchaEvent()
+    this.listenSubmitEvent()
 }
 
 $(function () {

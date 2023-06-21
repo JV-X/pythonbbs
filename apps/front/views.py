@@ -1,13 +1,14 @@
-from flask import Blueprint, request, render_template, jsonify, current_app, make_response
+from flask import Blueprint, request, render_template, current_app, make_response
 import string
 import random
 import time
-from flask_mail import Message
-from exts import mail, cache
+from exts import cache, db
 from utils import restful
 from utils.captcha import Captcha
 from hashlib import md5
 from io import BytesIO
+from .forms import RegisterForm
+from models.auth import UserModel
 
 bp = Blueprint('front', __name__, url_prefix='/')
 
@@ -50,3 +51,16 @@ def login():
 def register():
     if request.method == 'GET':
         return render_template('front/register.html')
+    else:
+        form = RegisterForm(request.form)
+        if form.validate():
+            email = form.email.data
+            username = form.username.data
+            password = form.password.data
+            u = UserModel(email=email, username=username, password=password)
+            db.session.add(u)
+            db.session.commit()
+            return restful.ok()
+        else:
+            print(form.errors)
+            return 'fail'
