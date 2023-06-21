@@ -3,6 +3,7 @@ import string
 import random
 from flask_mail import Message
 from exts import mail, cache
+from utils import restful
 
 bp = Blueprint('front', __name__, url_prefix='/')
 
@@ -27,13 +28,13 @@ bp = Blueprint('front', __name__, url_prefix='/')
 def email_captcha():
     email = request.args.get('email')
     if not email:
-        return jsonify({'code': 400, 'message': '请传入邮箱'})
+        return restful.params_error(message='请传入邮箱')
     source = list(string.digits)
     captcha = ''.join(random.sample(source, 6))
     current_app.celery.send_task('send_mail', (email, '知了邮箱验证码', f'您的验证码是{captcha}'))
     cache.set(email, captcha)
     print(cache.get(email))
-    return jsonify({'code': 200, 'message': '邮件发送成功'})
+    return restful.ok('邮件发送成功')
 
 
 @bp.route('/login', methods=['GET', 'POST'])
