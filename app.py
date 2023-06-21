@@ -1,5 +1,5 @@
 from flask import Flask
-from exts import db,mail
+from exts import db,mail,cache
 import config
 from flask_migrate import Migrate
 from models import auth
@@ -11,6 +11,7 @@ app.config.from_object(config)
 
 db.init_app(app)
 mail.init_app(app)
+cache.init_app(app)
 migrate = Migrate(app, db)
 
 mycelery = make_celery(app)
