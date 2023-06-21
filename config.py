@@ -1,4 +1,8 @@
+import os
+
 SECRET_KEY = 'asqwfrjvk689wk'
+
+BASE_DIR = os.path.dirname(__file__)
 
 DB_USERNAME = 'root'
 DB_PASSWORD = 'xjv123..'

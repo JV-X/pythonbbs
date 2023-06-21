@@ -12,7 +12,7 @@ var callback = function (event){
     zlajax.get({
         url: "email/captcha?email=" + email,
         success: function (result) {
-            if(result['code']==200){
+            if(result['code'] == 200) {
                 $this.off("click")
                 $this.attr("disabled",'disabled');
                 var countDown = 6;
@@ -34,12 +34,20 @@ var callback = function (event){
 }
 
 RegisterHandler.prototype.listenSendCaptchaEvent = function () {
-
     $('#email-captcha-btn').on('click',callback);
+}
+RegisterHandler.prototype.listenGraphCaptchaEvent = function() {
+    $('#captcha-img').on("click", function(){
+        var $this = $(this);
+        var src = $this.attr('src');
+        var new_src = zlparam.setParam(src, 'sign', Math.random())
+        $this.attr('src', new_src)
+    })
 }
 
 RegisterHandler.prototype.run = function () {
-    this.listenSendCaptchaEvent()
+    this.listenSendCaptchaEvent();
+    this.listenGraphCaptchaEvent()
 }
 
 $(function () {
