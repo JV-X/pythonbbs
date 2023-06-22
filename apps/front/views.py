@@ -107,3 +107,8 @@ def register():
         else:
             message = form.messages[0]
             return restful.params_error(message=message)
+
+
+@bp.route('setting')
+def setting():
+    return render_template('front/setting.html')
