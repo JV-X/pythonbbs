@@ -6,7 +6,17 @@ from exts import cache
 from flask import request
 
 
-class RegisterForm(Form):
+class BaseForm(Form):
+    @property
+    def messages(self):
+        message_list = []
+        if self.errors:
+            for errors in self.errors.values():
+                message_list.append(errors)
+        return message_list
+
+
+class RegisterForm(BaseForm):
     email = StringField(validators=[Email(message='请传入邮箱')])
     email_captcha = StringField(validators=[Length(6, 6, message='请输入正确格式的邮箱验证码')])
     username = StringField(validators=[Length(3, 20, message='请输入正确格式的用户名')])
@@ -33,4 +43,3 @@ class RegisterForm(Form):
         cached_captcha = cache.get(key)
         if not cached_captcha or cached_captcha.lower() != graph_captcha.lower():
             raise ValidationError('图形验证码错误')
-

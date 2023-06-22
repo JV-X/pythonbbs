@@ -62,5 +62,5 @@ def register():
             db.session.commit()
             return restful.ok()
         else:
-            print(form.errors)
-            return 'fail'
+            message = form.messages[0]
+            return restful.params_error(message=message)

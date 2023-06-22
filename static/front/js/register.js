@@ -12,7 +12,7 @@ var callback = function (event){
     zlajax.get({
         url: "email/captcha?email=" + email,
         success: function (result) {
-            if(result['code'] == 200) {
+            if(result['code'] === 200) {
                 $this.off("click")
                 $this.attr("disabled",'disabled');
                 var countDown = 60;
@@ -27,7 +27,6 @@ var callback = function (event){
                     }
                     countDown--
                 },1000)
-
             }
         }
     })
@@ -66,7 +65,11 @@ RegisterHandler.prototype.listenSubmitEvent = function() {
                 'email_captcha':email_captcha,
             },
             success : function(result){
-                console.log(result)
+                if (result['code']===200) {
+                    window.location = '/login'
+                }else{
+                    alert(result['message'])
+                }
             },
         })
     })
