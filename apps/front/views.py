@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, current_app, make_response, session
+from flask import Blueprint, request, render_template, current_app, make_response, session, redirect
 import string
 import random
 import time
@@ -16,6 +16,12 @@ bp = Blueprint('front', __name__, url_prefix='/')
 @bp.get('/')
 def index():
     return render_template('front/index.html')
+
+
+@bp.route('logout')
+def logout():
+    session.clear()
+    return redirect('/')
 
 
 @bp.get('graph/captcha')
@@ -62,8 +68,7 @@ def login():
             if not user.check_password(password):
                 return restful.params_error('密码错误')
             session['user_id'] = user.id
-            if remember == 1:
-                session.permanent = True
+            session.permanent = (remember == 1)
             return restful.ok()
         else:
             return restful.params_error(message=form.messages[0])
