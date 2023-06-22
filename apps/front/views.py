@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, current_app, make_response, session, redirect
+from flask import Blueprint, request, render_template, current_app, make_response, session, redirect, g
 import string
 import random
 import time
@@ -22,6 +22,22 @@ def index():
 def logout():
     session.clear()
     return redirect('/')
+
+
+@bp.before_request
+def front_before_request():
+    if 'user_id' in session:
+        user_id = session.get('user_id')
+        user = UserModel.query.get(user_id)
+        setattr(g, 'user', user)
+
+
+@bp.context_processor
+def front_context_processor():
+    if hasattr(g, 'user'):
+        return {'user': g.user}
+    else:
+        return {}
 
 
 @bp.get('graph/captcha')
