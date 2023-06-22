@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, current_app, make_response,session
+from flask import Blueprint, request, render_template, current_app, make_response, session
 import string
 import random
 import time
@@ -11,6 +11,11 @@ from .forms import RegisterForm, LoginForm
 from models.auth import UserModel
 
 bp = Blueprint('front', __name__, url_prefix='/')
+
+
+@bp.get('/')
+def index():
+    return render_template('front/index.html')
 
 
 @bp.get('graph/captcha')
