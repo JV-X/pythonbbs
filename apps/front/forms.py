@@ -1,6 +1,6 @@
 from wtforms import Form
 from wtforms.validators import Email, Length, EqualTo, ValidationError
-from wtforms.fields import StringField
+from wtforms.fields import StringField, IntegerField
 from models.auth import UserModel
 from exts import cache
 from flask import request
@@ -43,3 +43,9 @@ class RegisterForm(BaseForm):
         cached_captcha = cache.get(key)
         if not cached_captcha or cached_captcha.lower() != graph_captcha.lower():
             raise ValidationError('图形验证码错误')
+
+
+class LoginForm(BaseForm):
+    email = StringField(validators=[Email(message='请传入邮箱')])
+    password = StringField(validators=[Length(6, 20, message='请输入正确格式的密码')])
+    remember = IntegerField()

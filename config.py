@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 SECRET_KEY = 'asqwfrjvk689wk'
 
@@ -32,3 +33,5 @@ CACHE_TYPE = 'RedisCache'
 CACHE_DEFAULT_TIMEOUT = 300
 CACHE_REDIS_HOST = '127.0.0.1'
 CACHE_REDIS_PORT = 6379
+
+PERMANENT_SESSION_LIFETIME = timedelta(days=7)

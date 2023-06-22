@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, current_app, make_response
+from flask import Blueprint, request, render_template, current_app, make_response,session
 import string
 import random
 import time
@@ -7,7 +7,7 @@ from utils import restful
 from utils.captcha import Captcha
 from hashlib import md5
 from io import BytesIO
-from .forms import RegisterForm
+from .forms import RegisterForm, LoginForm
 from models.auth import UserModel
 
 bp = Blueprint('front', __name__, url_prefix='/')
@@ -45,6 +45,23 @@ def email_captcha():
 def login():
     if request.method == 'GET':
         return render_template('front/login.html')
+    else:
+        form = LoginForm(request.form)
+        if form.validate():
+            email = form.email.data
+            password = form.password.data
+            remember = form.remember.data
+            user = UserModel.query.filter_by(email=email).first()
+            if not user:
+                return restful.params_error('没有这个用户')
+            if not user.check_password(password):
+                return restful.params_error('密码错误')
+            session['user_id'] = user.id
+            if remember == 1:
+                session.permanent = True
+            return restful.ok()
+        else:
+            return restful.params_error(message=form.messages[0])
 
 
 @bp.route('/register', methods=['GET', 'POST'])
