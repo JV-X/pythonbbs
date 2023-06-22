@@ -9,7 +9,7 @@ from hashlib import md5
 from io import BytesIO
 from .forms import RegisterForm, LoginForm
 from models.auth import UserModel
-
+from .decorators import login_required
 bp = Blueprint('front', __name__, url_prefix='/')
 
 
@@ -110,5 +110,6 @@ def register():
 
 
 @bp.route('setting')
+@login_required
 def setting():
     return render_template('front/setting.html')
