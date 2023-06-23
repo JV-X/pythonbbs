@@ -10,8 +10,26 @@ var PublicPostHandler = function () {
     editor.create();
     this.editor = editor;
 }
-
+PublicPostHandler.prototype.listenSubmitEvent = function (){
+    var that = this
+    $('#submit-btn').on('click',function (event) {
+        event.preventDefault();
+        var title = $('input[name="title"]').val();
+        var board_id = $('select[name="board_id"]').val();
+        var content = that.editor.txt.html();
+        zlajax.post({
+            'url':'/post/public',
+            'data':{
+                title,board_id,content,
+            },
+            'success':function (result) {
+                console.log(result)
+            }
+        })
+    })
+}
 PublicPostHandler.prototype.run = function () {
+    this.listenSubmitEvent()
 }
 
 $(function () {

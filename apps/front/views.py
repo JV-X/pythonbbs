@@ -18,7 +18,7 @@ from utils import restful
 from utils.captcha import Captcha
 from hashlib import md5
 from io import BytesIO
-from .forms import RegisterForm, LoginForm, UploadImageForm, EditProfileForm
+from .forms import RegisterForm, LoginForm, UploadImageForm, EditProfileForm, PublicPostForm
 from models.auth import UserModel
 from .decorators import login_required
 from flask_avatars import Identicon
@@ -172,6 +172,22 @@ def public_post():
     if request.method == 'GET':
         boards = BoardModel.query.order_by(BoardModel.priority.desc()).all()
         return render_template('front/public_post.html', boards=boards)
+    else:
+        form = PublicPostForm(request.form)
+        if form.validate():
+            title = form.title.data
+            board_id = form.board_id.data
+            content = form.content.data
+            try:
+                board = BoardModel.query.get(board_id)
+            except Exception as e:
+                return restful.params_error(message='版块不存在')
+            post = PostModel(title=title, board=board, content=content, author=g.user)
+            db.session.add(post)
+            db.session.commit()
+            return restful.ok('帖子创建成功')
+        else:
+            return restful.params_error(message=form.messages[0])
 
 
 @bp.post('post/image/upload')
