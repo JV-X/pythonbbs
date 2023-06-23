@@ -28,8 +28,7 @@ def front_before_request():
 @bp.get('/')
 def index():
     boards = BoardModel.query.order_by(BoardModel.priority.desc()).all()
-
-    return render_template('front/index.html',boards=boards)
+    return render_template('front/index.html', boards=boards)
 
 
 @bp.route('logout')
@@ -155,3 +154,10 @@ def edit_profile():
         return restful.ok(message='修改个人信息成功')
     else:
         return restful.params_error(message=form.messages[0])
+
+
+@bp.route('/post/public', methods=['POST', 'GET'])
+def public_post():
+    if request.method == 'GET':
+        boards = BoardModel.query.order_by(BoardModel.priority.desc()).all()
+        return render_template('front/public_post.html', boards=boards)
