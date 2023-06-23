@@ -7,7 +7,7 @@ from utils import restful
 from utils.captcha import Captcha
 from hashlib import md5
 from io import BytesIO
-from .forms import RegisterForm, LoginForm, UploadAvatarForm
+from .forms import RegisterForm, LoginForm, UploadAvatarForm, EditProfileForm
 from models.auth import UserModel
 from .decorators import login_required
 from flask_avatars import Identicon
@@ -139,3 +139,16 @@ def upload_avatar():
     else:
         message = form.messages[0]
         return restful.params_error(message=message)
+
+
+@bp.post('profile/edit')
+@login_required
+def edit_profile():
+    form = EditProfileForm(request.form)
+    if form.validate():
+        signature = form.signature.data
+        g.user.signature = signature
+        db.session.commit()
+        return restful.ok(message='修改个人信息成功')
+    else:
+        return restful.params_error(message=form.messages[0])

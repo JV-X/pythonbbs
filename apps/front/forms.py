@@ -54,5 +54,8 @@ class LoginForm(BaseForm):
 
 class UploadAvatarForm(BaseForm):
     image = FileField(validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], message='请传入正确格式的图片'),
-                                   FileSize(1024 * 1024 * 5, message='图片大小不能超过5M')])
+                                  FileSize(1024 * 1024 * 5, message='图片大小不能超过5M')])
 
+
+class EditProfileForm(BaseForm):
+    signature = StringField(validators=[Length(min=1, max=50, message='签名在1-50之间')])
