@@ -4,6 +4,8 @@
 {% endblock %}
 
 {% block head %}
+    <script src="https://cdn.jsdelivr.net/npm/wangeditor@latest/dist/wangEditor.min.js"></script>
+    <script src="{{ url_for('static', filename='front/js/public_post.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -26,7 +28,7 @@
             </div>
         </div>
         <div class="form-group">
-            <textarea style="width:100%"></textarea>
+            <div id="editor"></div>
         </div>
         <div class="form-group">
             <button class="btn btn-danger" id="submit-btn">发布帖子</button>
