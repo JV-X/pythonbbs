@@ -7,10 +7,11 @@ from utils import restful
 from utils.captcha import Captcha
 from hashlib import md5
 from io import BytesIO
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, UploadAvatarForm
 from models.auth import UserModel
 from .decorators import login_required
 from flask_avatars import Identicon
+import os
 
 bp = Blueprint('front', __name__, url_prefix='/')
 
@@ -105,7 +106,7 @@ def register():
             identicon = Identicon()
             filenames = identicon.generate(text=md5(email.encode('utf-8')).hexdigest())
             avatar = filenames[2]
-            u = UserModel(email=email, username=username, password=password,avatar=avatar)
+            u = UserModel(email=email, username=username, password=password, avatar=avatar)
             db.session.add(u)
             db.session.commit()
             return restful.ok()
@@ -118,4 +119,21 @@ def register():
 @login_required
 def setting():
     email_hash = md5(g.user.email.encode('utf-8')).hexdigest()
-    return render_template('front/setting.html',email_hash=email_hash)
+    return render_template('front/setting.html', email_hash=email_hash)
+
+
+@bp.post('avatar/upload')
+@login_required
+def upload_avatar():
+    form = UploadAvatarForm(request.files)
+    if form.validate():
+        image = form.image.data
+        filename = image.filename
+        image_path = os.path.join(current_app.config['AVATARS_SAVE_PATH'],filename)
+        image.save(image_path)
+        g.user.avatar = filename
+        db.session.commit()
+        return restful.ok(data={'avatar':filename})
+    else:
+        message = form.messages[0]
+        return restful.params_error(message=message)

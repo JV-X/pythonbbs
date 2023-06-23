@@ -1,6 +1,7 @@
 from wtforms import Form
 from wtforms.validators import Email, Length, EqualTo, ValidationError
-from wtforms.fields import StringField, IntegerField
+from wtforms.fields import StringField, IntegerField, FileField
+from flask_wtf.file import FileAllowed, FileSize
 from models.auth import UserModel
 from exts import cache
 from flask import request
@@ -49,3 +50,9 @@ class LoginForm(BaseForm):
     email = StringField(validators=[Email(message='请传入邮箱')])
     password = StringField(validators=[Length(6, 20, message='请输入正确格式的密码')])
     remember = IntegerField()
+
+
+class UploadAvatarForm(BaseForm):
+    image = FileField(validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], message='请传入正确格式的图片'),
+                                   FileSize(1024 * 1024 * 5, message='图片大小不能超过5M')])
+
