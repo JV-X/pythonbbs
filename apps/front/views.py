@@ -12,19 +12,9 @@ from models.auth import UserModel
 from .decorators import login_required
 from flask_avatars import Identicon
 import os
+from models.post import BoardModel, BannerModel, PostModel, CommentModel
 
 bp = Blueprint('front', __name__, url_prefix='/')
-
-
-@bp.get('/')
-def index():
-    return render_template('front/index.html')
-
-
-@bp.route('logout')
-def logout():
-    session.clear()
-    return redirect('/')
 
 
 @bp.before_request
@@ -33,6 +23,19 @@ def front_before_request():
         user_id = session.get('user_id')
         user = UserModel.query.get(user_id)
         setattr(g, 'user', user)
+
+
+@bp.get('/')
+def index():
+    boards = BoardModel.query.order_by(BoardModel.priority.desc()).all()
+
+    return render_template('front/index.html',boards=boards)
+
+
+@bp.route('logout')
+def logout():
+    session.clear()
+    return redirect('/')
 
 
 @bp.context_processor
