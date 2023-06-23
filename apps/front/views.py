@@ -10,6 +10,8 @@ from io import BytesIO
 from .forms import RegisterForm, LoginForm
 from models.auth import UserModel
 from .decorators import login_required
+from flask_avatars import Identicon
+
 bp = Blueprint('front', __name__, url_prefix='/')
 
 
@@ -100,7 +102,10 @@ def register():
             email = form.email.data
             username = form.username.data
             password = form.password.data
-            u = UserModel(email=email, username=username, password=password)
+            identicon = Identicon()
+            filenames = identicon.generate(text=md5(email.encode('utf-8')).hexdigest())
+            avatar = filenames[2]
+            u = UserModel(email=email, username=username, password=password,avatar=avatar)
             db.session.add(u)
             db.session.commit()
             return restful.ok()
@@ -112,4 +117,5 @@ def register():
 @bp.route('setting')
 @login_required
 def setting():
-    return render_template('front/setting.html')
+    email_hash = md5(g.user.email.encode('utf-8')).hexdigest()
+    return render_template('front/setting.html',email_hash=email_hash)
