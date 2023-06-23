@@ -52,7 +52,7 @@ class LoginForm(BaseForm):
     remember = IntegerField()
 
 
-class UploadAvatarForm(BaseForm):
+class UploadImageForm(BaseForm):
     image = FileField(validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], message='请传入正确格式的图片'),
                                   FileSize(1024 * 1024 * 5, message='图片大小不能超过5M')])
 

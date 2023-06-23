@@ -1,4 +1,15 @@
-from flask import Blueprint, request, render_template, current_app, make_response, session, redirect, g
+from flask import (
+    Blueprint,
+    request,
+    render_template,
+    current_app,
+    make_response,
+    session,
+    redirect,
+    g,
+    jsonify,
+    url_for,
+)
 import string
 import random
 import time
@@ -7,7 +18,7 @@ from utils import restful
 from utils.captcha import Captcha
 from hashlib import md5
 from io import BytesIO
-from .forms import RegisterForm, LoginForm, UploadAvatarForm, EditProfileForm
+from .forms import RegisterForm, LoginForm, UploadImageForm, EditProfileForm
 from models.auth import UserModel
 from .decorators import login_required
 from flask_avatars import Identicon
@@ -127,7 +138,7 @@ def setting():
 @bp.post('avatar/upload')
 @login_required
 def upload_avatar():
-    form = UploadAvatarForm(request.files)
+    form = UploadImageForm(request.files)
     if form.validate():
         image = form.image.data
         filename = image.filename
@@ -161,3 +172,28 @@ def public_post():
     if request.method == 'GET':
         boards = BoardModel.query.order_by(BoardModel.priority.desc()).all()
         return render_template('front/public_post.html', boards=boards)
+
+
+@bp.post('post/image/upload')
+@login_required
+def upload_post_image():
+    form = UploadImageForm(request.files)
+    if form.validate():
+        image = form.image.data
+        filename = image.filename
+        _, ext = os.path.splitext(filename)
+        filename = md5((g.user.email + str(time.time())).encode('utf-8')).hexdigest() + ext
+        image_path = os.path.join(current_app.config['POST_IMAGE_SAVE_PATH'], filename)
+        image.save(image_path)
+
+        return jsonify({
+            'errno': 0,
+            'data': [{
+                'url': url_for('media.get_post_image', filename=filename),
+                'alt': filename,
+                'href': '',
+            }]
+        })
+    else:
+        message = form.messages[0]
+        return restful.params_error(message=message)

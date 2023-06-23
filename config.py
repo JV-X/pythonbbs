@@ -35,3 +35,4 @@ CACHE_REDIS_PORT = 6379
 PERMANENT_SESSION_LIFETIME = timedelta(days=7)
 
 AVATARS_SAVE_PATH = os.path.join(BASE_DIR, 'media', 'avatars')
+POST_IMAGE_SAVE_PATH = os.path.join(BASE_DIR, 'media', 'post')
