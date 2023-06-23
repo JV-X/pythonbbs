@@ -129,11 +129,13 @@ def upload_avatar():
     if form.validate():
         image = form.image.data
         filename = image.filename
-        image_path = os.path.join(current_app.config['AVATARS_SAVE_PATH'],filename)
+        _, ext = os.path.splitext(filename)
+        filename = md5((g.user.email + str(time.time())).encode('utf-8')).hexdigest() + ext
+        image_path = os.path.join(current_app.config['AVATARS_SAVE_PATH'], filename)
         image.save(image_path)
         g.user.avatar = filename
         db.session.commit()
-        return restful.ok(data={'avatar':filename})
+        return restful.ok(data={'avatar': filename})
     else:
         message = form.messages[0]
         return restful.params_error(message=message)
