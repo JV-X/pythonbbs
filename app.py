@@ -6,6 +6,7 @@ from models import auth
 from apps.front import front_bp
 from apps.media import media_bp
 from bbs_celery import make_celery
+import commands
 
 app = Flask(__name__)
 app.config.from_object(config)
@@ -22,6 +23,7 @@ mycelery = make_celery(app)
 
 app.register_blueprint(front_bp)
 app.register_blueprint(media_bp)
+app.cli.command('init_board')(commands.init_board)
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
