@@ -18,7 +18,7 @@ from utils import restful
 from utils.captcha import Captcha
 from hashlib import md5
 from io import BytesIO
-from .forms import RegisterForm, LoginForm, UploadImageForm, EditProfileForm, PublicPostForm
+from .forms import RegisterForm, LoginForm, UploadImageForm, EditProfileForm, PublicPostForm, PublicCommentForm
 from models.auth import UserModel
 from .decorators import login_required
 from flask_avatars import Identicon
@@ -188,6 +188,41 @@ def public_post():
             return restful.ok('帖子创建成功')
         else:
             return restful.params_error(message=form.messages[0])
+
+
+@bp.get('post/detail/<int:post_id>')
+def post_detail(post_id):
+    try:
+        post = PostModel.query.get(post_id)
+    except Exception as e:
+        return 404
+    comment_count = CommentModel.query.filter_by(post_id=post_id).count()
+    context = {
+        'comment_count': comment_count,
+        'post': post,
+    }
+    return render_template('front/post_detail.html', **context)
+
+
+@bp.post('/comment')
+@login_required
+def public_comment():
+    form = PublicCommentForm(request.form)
+    if form.validate():
+        content = form.content.data
+        post_id = form.post_id.data
+        try:
+            post = PostModel.query.get(post_id)
+        except Exception as e:
+            return restful.params_error(message='没有这篇帖子')
+        comment = CommentModel(content=content)
+        comment.author = g.user
+        comment.post = post
+        db.session.add(comment)
+        db.session.commit()
+        return restful.ok()
+    else:
+        return restful.params_error(message=form.messages[0])
 
 
 @bp.post('post/image/upload')

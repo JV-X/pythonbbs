@@ -65,3 +65,8 @@ class PublicPostForm(BaseForm):
     board_id = IntegerField(validators=[InputRequired(message='请传入版块ID')])
     title = StringField(validators=[Length(max=20,min=2,message='标题长度必须在2-20之间')])
     content = StringField(validators=[Length(max=2000,min=2,message='内容长度限制不符')])
+
+
+class PublicCommentForm(BaseForm):
+    content = StringField(validators=[Length(max=2000,min=2,message='内容长度限制不符')])
+    post_id = IntegerField(validators=[InputRequired(message='请传入帖子ID')])
