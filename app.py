@@ -24,6 +24,7 @@ mycelery = make_celery(app)
 app.register_blueprint(front_bp)
 app.register_blueprint(media_bp)
 app.cli.command('init_board')(commands.init_board)
+app.cli.command('create_test_posts')(commands.create_test_posts)
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)

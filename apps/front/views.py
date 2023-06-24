@@ -24,6 +24,7 @@ from .decorators import login_required
 from flask_avatars import Identicon
 import os
 from models.post import BoardModel, BannerModel, PostModel, CommentModel
+from flask_paginate import get_page_parameter, Pagination
 
 bp = Blueprint('front', __name__, url_prefix='/')
 
@@ -39,8 +40,14 @@ def front_before_request():
 @bp.get('/')
 def index():
     boards = BoardModel.query.order_by(BoardModel.priority.desc()).all()
-    posts = PostModel.query.order_by(PostModel.create_time.desc()).all()
-    return render_template('front/index.html', boards=boards,posts=posts)
+    posts_query = PostModel.query.order_by(PostModel.create_time.desc())
+    total = posts_query.count()
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+    start = (page - 1) * current_app.config['PER_PAGE_COUNT']
+    end = start + current_app.config['PER_PAGE_COUNT']
+    posts = posts_query.slice(start, end)
+    pagination = Pagination(bs_version=3, page=page, total=total)
+    return render_template('front/index.html', boards=boards, posts=posts, pagination=pagination)
 
 
 @bp.route('logout')

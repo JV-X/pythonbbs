@@ -36,3 +36,5 @@ PERMANENT_SESSION_LIFETIME = timedelta(days=7)
 
 AVATARS_SAVE_PATH = os.path.join(BASE_DIR, 'media', 'avatars')
 POST_IMAGE_SAVE_PATH = os.path.join(BASE_DIR, 'media', 'post')
+
+PER_PAGE_COUNT = 10
