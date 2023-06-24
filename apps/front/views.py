@@ -41,22 +41,28 @@ def front_before_request():
 @bp.get('/')
 def index():
     sort = request.args.get('st', type=int, default=1)
+    board_id = request.args.get('bd', type=int, default=None)
+
     boards = BoardModel.query.order_by(BoardModel.priority.desc()).all()
+
     if sort == 1:
         posts_query = PostModel.query.order_by(PostModel.create_time.desc())
     else:
-        posts_query = db.session.query(PostModel).\
-            outerjoin(CommentModel).\
-            group_by(PostModel.id).\
+        posts_query = db.session.query(PostModel). \
+            outerjoin(CommentModel). \
+            group_by(PostModel.id). \
             order_by(func.count(CommentModel.id).desc(),
                      PostModel.create_time.desc())
     total = posts_query.count()
+    if board_id:
+        posts_query = posts_query.filter(PostModel.board_id==board_id)
+
     page = request.args.get(get_page_parameter(), type=int, default=1)
     start = (page - 1) * current_app.config['PER_PAGE_COUNT']
     end = start + current_app.config['PER_PAGE_COUNT']
     posts = posts_query.slice(start, end)
     pagination = Pagination(bs_version=3, page=page, total=total)
-    return render_template('front/index.html', boards=boards, posts=posts, pagination=pagination,st=sort)
+    return render_template('front/index.html', boards=boards, posts=posts, pagination=pagination, st=sort, bd=board_id)
 
 
 @bp.route('logout')
