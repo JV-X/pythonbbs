@@ -25,6 +25,7 @@ from flask_avatars import Identicon
 import os
 from models.post import BoardModel, BannerModel, PostModel, CommentModel
 from flask_paginate import get_page_parameter, Pagination
+from sqlalchemy.sql import func
 
 bp = Blueprint('front', __name__, url_prefix='/')
 
@@ -39,15 +40,23 @@ def front_before_request():
 
 @bp.get('/')
 def index():
+    sort = request.args.get('st', type=int, default=1)
     boards = BoardModel.query.order_by(BoardModel.priority.desc()).all()
-    posts_query = PostModel.query.order_by(PostModel.create_time.desc())
+    if sort == 1:
+        posts_query = PostModel.query.order_by(PostModel.create_time.desc())
+    else:
+        posts_query = db.session.query(PostModel).\
+            outerjoin(CommentModel).\
+            group_by(PostModel.id).\
+            order_by(func.count(CommentModel.id).desc(),
+                     PostModel.create_time.desc())
     total = posts_query.count()
     page = request.args.get(get_page_parameter(), type=int, default=1)
     start = (page - 1) * current_app.config['PER_PAGE_COUNT']
     end = start + current_app.config['PER_PAGE_COUNT']
     posts = posts_query.slice(start, end)
     pagination = Pagination(bs_version=3, page=page, total=total)
-    return render_template('front/index.html', boards=boards, posts=posts, pagination=pagination)
+    return render_template('front/index.html', boards=boards, posts=posts, pagination=pagination,st=sort)
 
 
 @bp.route('logout')
