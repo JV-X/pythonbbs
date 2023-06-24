@@ -39,7 +39,8 @@ def front_before_request():
 @bp.get('/')
 def index():
     boards = BoardModel.query.order_by(BoardModel.priority.desc()).all()
-    return render_template('front/index.html', boards=boards)
+    posts = PostModel.query.order_by(PostModel.create_time.desc()).all()
+    return render_template('front/index.html', boards=boards,posts=posts)
 
 
 @bp.route('logout')
