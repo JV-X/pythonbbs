@@ -17,7 +17,12 @@ LoginHandler.prototype.listenSubmitEvent = function () {
                 'remember': remember ? 1 : 0,
             },
             success:function (result){
-                console.log(result)
+                if (result['code']==200){
+                    var token = result['data']['token']
+                    console.log(token)
+                    window.location = '/'
+                    localStorage.setItem('JWT_TOEKN_KEY',token)
+                }
             }
         })
     })

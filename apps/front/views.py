@@ -26,6 +26,7 @@ import os
 from models.post import BoardModel, BannerModel, PostModel, CommentModel
 from flask_paginate import get_page_parameter, Pagination
 from sqlalchemy.sql import func
+from flask_jwt_extended import create_access_token
 
 bp = Blueprint('front', __name__, url_prefix='/')
 
@@ -55,7 +56,7 @@ def index():
                      PostModel.create_time.desc())
     total = posts_query.count()
     if board_id:
-        posts_query = posts_query.filter(PostModel.board_id==board_id)
+        posts_query = posts_query.filter(PostModel.board_id == board_id)
 
     page = request.args.get(get_page_parameter(), type=int, default=1)
     start = (page - 1) * current_app.config['PER_PAGE_COUNT']
@@ -123,8 +124,11 @@ def login():
             if not user.check_password(password):
                 return restful.params_error('密码错误')
             session['user_id'] = user.id
+            token = ''
+            if user.is_staff:
+                token = create_access_token(identity=user.id)
             session.permanent = (remember == 1)
-            return restful.ok()
+            return restful.ok(data={'token': token})
         else:
             return restful.params_error(message=form.messages[0])
 
